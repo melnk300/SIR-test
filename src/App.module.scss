@@ -1,0 +1,54 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    padding: 1em;
+    background-color: #00838F;
+    display: flex;
+    gap: 1em;
+
+    input {
+        padding: .2em;
+        border: none;
+        font-size: 1.4em;
+        border-radius: .2em;
+    }
+}
+
+.page_inner {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.sidebar {
+    background-color: #F2F2F2;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.repository_title {
+    font-size: 1.5em;
+}
+
+.repository_meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.repository_meta_inner {
+    display: flex;
+    gap: .2em;
+    align-items: center;
+}
+
+.repository_tags {
+    display: flex;
+    gap: .2em;
+}
