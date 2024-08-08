@@ -4,73 +4,85 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Button, Chip } from "@mui/material"
 import StarIcon from '@mui/icons-material/Star';
 import { yellow } from "@mui/material/colors"
+import useRepositories from "./hooks/useRepositories"
+import { Repository } from "./models/Repository"
+import { useState } from "react"
 
 
 const columns: GridColDef[] = [
   { field: 'title', headerName: 'Название', flex: 1},
   { field: 'language', headerName: 'Язык', flex: 1 },
-  { field: 'forkCount', headerName: 'Число форков', flex: 1 },
-  { field: 'starCount', headerName: 'Число звезд', flex: 1 },
+  { field: 'forks', headerName: 'Число форков', flex: 1 },
+  { field: 'stars', headerName: 'Число звезд', flex: 1 },
   { field: 'update', headerName: 'Дата обновления', flex: 1 },
 ]
 
-const rows = [
-  {
-    id: 1,
-    title: 1,
-    language: 1,
-    forkCount: 1,
-    starCount: 1,
-    update: 1
-  }, {
-    id: 2,
-    title: 1,
-    language: 1,
-    forkCount: 1,
-    starCount: 1,
-    update: 1
-  }, {
-    id: 3,
-    title: 1,
-    language: 1,
-    forkCount: 1,
-    starCount: 1,
-    update: 1
-  },
-]
 function App() {
+  const {
+    searchTerm,
+    setSearchTerm,
+    handleSearch,
+    transformedData,
+    error,
+    isLoading,
+  } = useRepositories();
+
+  const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleOpenSidebar = (id: string) => {
+    setSelectedRepository(transformedData.find(repo => repo.id === id));
+    setSidebarOpen(true);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <input type="search" />
-        <Button variant="contained">Поиск</Button>
-      </div>
-      <main className={styles.page_inner}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          autoHeight={true}
-          style={{ height: '100%', width: '100%' }}
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Поисковый запрос"
         />
-        <aside className={styles.sidebar}>
-          <div className={styles.repository_title}>
-            Название репозитория
+        <Button onClick={handleSearch} disabled={isLoading} variant="contained">
+          {isLoading ? "Идёт поиск..." : "Искать"}
+        </Button>
+      </div>
+      {transformedData.length > 0 ? <>
+        <main className={styles.page_inner}>
+          <div className={styles.main}>
+            <h1>Результаты поиска</h1>
+            <DataGrid
+              rows={transformedData}
+              columns={columns}
+              pageSizeOptions={[10]}
+              style={{width: '100%' }}
+              disableMultipleRowSelection={true}
+              onRowSelectionModelChange={(e) => handleOpenSidebar(e[0])}
+            />
           </div>
-          <div className={styles.repository_meta}>
-            <Chip label="Python" color="primary"/>
-            <div className={styles.repository_meta_inner}><StarIcon sx={{ fontSize: "2rem", color: yellow[500] }}/>9 800 000</div>
+          <aside className={styles.sidebar}>
+            {sidebarOpen ? (<>
+              <div className={styles.repository_title}>
+                {selectedRepository?.title}
+              </div>
+              <div className={styles.repository_meta}>
+                <Chip label={selectedRepository?.language} color="primary" />
+                <div className={styles.repository_meta_inner}><StarIcon
+                  sx={{ fontSize: "2rem", color: yellow[500] }} />{selectedRepository?.stars}</div>
+              </div>
+              <div className={styles.repository_tags}>
+                {selectedRepository?.tags.map(tag => {
+                  return <Chip label={tag} />
+                })}
+              </div>
+              <div>{selectedRepository?.license}</div>
+            </>) : <div className={styles.sidebar_empty}>Выберите репозиторий</div>}
+          </aside>
+        </main>
+      </> : <h1 className={styles.main_empty}>Добро пожаловать</h1>}
           </div>
-          <div className={styles.repository_tags}>
-            <Chip label="Python"/>
-            <Chip label="cli"/>
-            <Chip label="ARV"/>
-            <Chip label="data"/>
-          </div>
-          <div>GPL-3.0 license</div>
-        </aside>
-      </main>
-    </div>
-  );
-}
+        );
+      }
 
 export default App;

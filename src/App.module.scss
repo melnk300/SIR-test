@@ -24,6 +24,10 @@
     grid-template-columns: 2fr 1fr;
 }
 
+.main {
+    padding: 1em;
+}
+
 .sidebar {
     background-color: #F2F2F2;
     padding: 1em;
@@ -51,4 +55,20 @@
 .repository_tags {
     display: flex;
     gap: .2em;
+    flex-wrap: wrap;
+}
+
+.sidebar_empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.main_empty {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
